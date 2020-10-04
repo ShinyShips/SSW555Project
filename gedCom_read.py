@@ -1,4 +1,4 @@
-import sys, re
+import sys, re, datetime
 
 from gedcom.element.individual import IndividualElement
 from gedcom.parser import Parser
@@ -6,6 +6,15 @@ from prettytable import PrettyTable
 from var import e
 
 root_child_elements = []
+# Path to .ged 
+file_path = 'windsor-family-Andy-Nguyen.ged'
+
+# Initialize parser/Pretty Table
+gedcom_parser = Parser()
+
+
+# Parse file
+gedcom_parser.parse_file(file_path)
 
 
 def generateChildElements():
@@ -13,28 +22,41 @@ def generateChildElements():
     root_child_elements = e.root_child_elements
 
 def checkValidDates(element):
-                print(element)
-                # Unpack the name tuple
-                (first, last) = element.get_name()
-                print(str(first) + " " + str(last))
-                (birthData) = element.get_birth_data()
-                (deathInfo) = element.get_death_data()
-                bYear  = birthData[0].split()
-                if(deathInfo[2]):
-                    deathYear = deathInfo[0].split()
-                    if (int(deathYear[2]) > 2020):
-                        print("Death Date Invalid")
-                        return False
-                else:
-                    if (int(bYear[2]) > 2020):
-                        print("Birth Date Invalid")
-                        return False
-                print("Birth and Death dates are valid")
-                return True
+    (birthData) = element.get_birth_data()
+    (deathInfo) = element.get_death_data()
+    bYear  = birthData[0].split()
+    if(deathInfo[2]):
+        deathYear = deathInfo[0].split()
+        if (int(deathYear[2]) > 2020):
+            print("ERROR: Death Date Invalid")
+            return False
+        else:
+            if (int(bYear[2]) > 2020):
+                print("ERROR: Birth Date Invalid")
+                return False
+    print("Birth and Death dates are valid")
+    return True
 
+def checkBirthBeforeMarriage(element):
+    marriages = gedcom_parser.get_marriage_years(element)
+    (birthData) = element.get_birth_data()
+    bDate = birthData[0].split()
+    bYear = int(bDate[2])
+    numMarriages  = len(marriages)
+    counter = 0
+    
+    if marriages:
+        while counter < numMarriages:
+            weddingYear = marriages[counter]
+            if  bYear > weddingYear:
+                print ("ERROR: Birth is after Marriage")
+                return False
+            counter += 1
+    print ("Birth is before Marriage")
+    return True
 
 def parse(allElements):
-    tree = {}
+    # tree = {}
     generateChildElements()
     IndividualTable = PrettyTable()
     FamilyTable = PrettyTable()
@@ -85,6 +107,7 @@ def formatOutput(line):
 output =""
 generateChildElements()
 checkValidDates(root_child_elements[1])
+checkBirthBeforeMarriage(root_child_elements[1])
 parse(root_child_elements)
 print("Type stop to end program")
 

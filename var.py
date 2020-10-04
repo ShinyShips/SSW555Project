@@ -8,7 +8,7 @@ root_child_elements = []
 
 
 # Path to .ged 
-file_path = 'My-Family-7-Sep-2020-972.ged'
+file_path = 'windsor-family-Andy-Nguyen.ged'
 
 # Initialize parser/Pretty Table
 gedcom_parser = Parser()
