@@ -9,10 +9,15 @@ def checkBirthBeforeMarriageParents(element):
     divorce_year = parents.get_marriage_years[-1]
     if int(birthDate) <= int(marriage_date):
         print("Error this child was born before marriage")
+        return 0
+        if int(birthDate[0]) > int(divorce_year):
+            print("Error this child was born after divorce")
+            return 0
+        else:
+            print("birth is weird but still ok")
+            retrun
+            1
     else:
         print("birth is ok")
-    if int(birthDate[0]) > int(divorce_year):
-        print("Error this child was born after divorce")
-    else:
-        print("birth is weird but still ok")
+        return 1
 
