@@ -31,9 +31,6 @@ def divorce_before_death(death_date, divorce_date):
         return 'not divorced before death'
 
 
-
 def numerical_month(month):
     return{'JAN': 1, 'FEB': 2, 'MAR': 3, 'APR': 4, 'MAY': 5, 'JUN': 6, 'JUL': 7, 'AUG': 8,
            'SEP': 9, 'OCT': 10, 'NOV': 11, 'DEC': 12}[month]
-
-

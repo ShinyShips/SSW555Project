@@ -1,5 +1,7 @@
 import sys, re
 #checks if birth is before death
+
+
 def birthBeforeDeath(death_date,birth_date):
     deathInfo = death_date.split(" ");
     if(len(deathInfo) < 3):
