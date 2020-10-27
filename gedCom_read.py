@@ -1,4 +1,6 @@
-import sys, re, datetime
+import sys, re
+
+from datetime import datetime
 
 from gedcom.element.individual import IndividualElement
 from gedcom.parser import Parser
@@ -21,25 +23,29 @@ def generateChildElements():
     global root_child_elements
     root_child_elements = e.root_child_elements
 
-def checkValidDates(element):
-    (birthData) = element.get_birth_data()
-    (deathInfo) = element.get_death_data()
-    bYear  = birthData[0].split()
-    if(deathInfo[2]):
-        deathYear = deathInfo[0].split()
-        if (int(deathYear[2]) > 2020):
+# US01
+def checkValidDates(individual):
+    (birthData) = individual.get_birth_data()
+    (deathData) = individual.get_death_data()
+    if(deathData[2]):
+        birthDate = birthData[0].split()
+        deathDate = deathData[0].split()
+        birthYear = int(birthDate[2])
+        deathYear = int(deathDate[2])
+        if (deathYear > 2020):
             print("ERROR: Death Date Invalid")
             return False
         else:
-            if (int(bYear[2]) > 2020):
+            if (birthYear > 2020):
                 print("ERROR: Birth Date Invalid")
                 return False
     print("Birth and Death dates are valid")
     return True
 
-def checkBirthBeforeMarriage(element):
-    marriages = gedcom_parser.get_marriage_years(element)
-    (birthData) = element.get_birth_data()
+# US02
+def checkBirthBeforeMarriage(individual):
+    marriages = gedcom_parser.get_marriage_years(individual)
+    (birthData) = individual.get_birth_data()
     bDate = birthData[0].split()
     bYear = int(bDate[2])
     numMarriages  = len(marriages)
@@ -54,6 +60,125 @@ def checkBirthBeforeMarriage(element):
             counter += 1
     print ("Birth is before Marriage")
     return True
+
+# US09
+def checkBirthBeforeDeathOfParents(individual):
+        checkFather = False
+        checkMother = False
+        parents = gedcom_parser.get_parents(individual)
+
+        childBirthDate = getBirthDay(individual)
+        if (parents):
+            fatherDeathDate = getDeathDay(parents[0])
+            motherDeathDate = getDeathDay(parents[1])
+        else:
+            return True
+
+        if (fatherDeathDate == None):
+            checkFather = True 
+        elif (monthsBetween(fatherDeathDate, childBirthDate) > 9):
+            checkFather = True
+        else:
+            checkFather = False
+
+        if (motherDeathDate == None):
+            checkMother = True 
+        elif (monthsBetween(motherDeathDate, childBirthDate) <= 0):
+            checkMother = True
+        else:
+            checkMother = False
+
+        if (checkFather and checkMother):
+            print ("Born in valid dates")
+            return True
+        else:
+            print ("Not born in valid dates")
+            return False
+
+
+# US10
+def checkMarriageAfter14(individual):
+        marriages = gedcom_parser.get_marriages(individual)
+        marriage_dates = [idx for idx, val in marriages]
+        marriage_datetimes = []
+        for date in marriage_dates:
+            marriage_datetimes.append(convertDateListToDateTime(date.split()))
+
+        for datetime in marriage_datetimes:
+            print(getBirthDay(individual))
+            print(datetime)
+            print (yearsBetween(getBirthDay(individual), datetime))
+            if (yearsBetween(getBirthDay(individual), datetime) < 14):
+                return False
+
+        families = gedcom_parser.get_families(individual)
+
+        index = 0
+
+        while index < len(families):
+            members = gedcom_parser.get_family_members(families[index])
+            spouse = members[1]
+            spouseBirthday = getBirthDay(spouse)
+            print(yearsBetween(spouseBirthday, marriage_datetimes[index]))
+            if (yearsBetween(spouseBirthday, marriage_datetimes[index]) < 14):
+                return False
+            index += 1
+        return True
+
+# Helper Functions
+def convertDateListToDateTime(list):
+    if (list[1] == 'JAN'):
+        month = 1
+    elif (list[1] == 'FEB'):
+        month = 2
+    elif (list[1] == 'MAR'):
+        month = 3
+    elif (list[1] == 'APR'):
+        month = 4
+    elif (list[1] == 'MAY'):
+        month = 5
+    elif (list[1] == 'JUN'):
+        month = 6
+    elif (list[1] == 'JUL'):
+        month = 7
+    elif (list[1] == 'AUG'):
+        month = 8
+    elif (list[1] == 'SEP'):
+        month = 9
+    elif (list[1] == 'OCT'):
+        month = 10
+    elif (list[1] == 'NOV'):
+        month = 11
+    elif (list[1] == 'DEC'):
+        month = 12
+    
+    day = int(list[0])
+    year = int(list[2])
+
+    d = datetime(year, month, day)
+    return d
+
+def getBirthDay(individual):
+    (birthData) = individual.get_birth_data()
+    bDate = birthData[0].split()
+    bDate = convertDateListToDateTime(bDate)
+    return bDate
+
+def getDeathDay(individual):
+    (deathData) = individual.get_death_data()
+    if (deathData[0] == ''):
+        return None
+    dDate = deathData[0].split()
+    dDate = convertDateListToDateTime(dDate)
+    return dDate
+
+def monthsBetween(parent, child):
+    num_months = (child.year - parent.year) * 12 + (child.month - parent.month)
+    return num_months
+
+def yearsBetween(birth, marriage):
+    num_years = (marriage.year - birth.year)
+    return num_years
 
 def parse(allElements):
     # tree = {}
@@ -108,6 +233,8 @@ output =""
 generateChildElements()
 checkValidDates(root_child_elements[1])
 checkBirthBeforeMarriage(root_child_elements[1])
+checkBirthBeforeDeathOfParents(root_child_elements[8])
+checkMarriageAfter14(root_child_elements[1])
 parse(root_child_elements)
 print("Type stop to end program")
 
