@@ -42,11 +42,8 @@ def checkValidDates(individual):
     print("Birth and Death dates are valid")
     return True
 
-# US02
-def checkBirthBeforeMarriage(individual):
-    marriages = gedcom_parser.get_marriage_years(individual)
-    (birthData) = individual.get_birth_data()
-    
+
+
 def checkForBigamy(element):
     marriages = gedcom_parser.get_marriage_years(element)
     divorces = gedcom_parser.get_divorce_years(element)
@@ -71,7 +68,27 @@ def checkForBigamy(element):
                 print("Marriage #"+(k+1)+" is before Marriage #"+k)
                 return False
     return True
-                
+
+def checkForOldParents(element):
+    #mom can't be 60 years older
+    #dad can't be 80 years older
+    parents = gedcom_parser.get_parents(element)
+    childAge = gedcom_parser.get_birth_year(element)
+    if(parents):
+        #male
+        dadAge = parents[0].get_birth_year()
+        #female
+        momAge = parents[1].get_birth_year()
+        if(dadAge + 80 < childAge):
+            print("Error: Dad is 80+ years older than son")
+            return False
+        if(momAge + 60 < childAge):
+            print("Error: Mom is 60+ years older than son")
+            return False
+
+    return True
+
+# US02               
 def checkBirthBeforeMarriage(element):
     marriages = gedcom_parser.get_marriage_years(element)
     (birthData) = element.get_birth_data()
