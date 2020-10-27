@@ -37,6 +37,31 @@ def checkValidDates(element):
     print("Birth and Death dates are valid")
     return True
 
+def checkForBigamy(element):
+    marriages = gedcom_parser.get_marriage_years(element)
+    divorces = gedcom_parser.get_divorce_years(element)
+    numMarriages = len(marriages)
+    numDivorce = len(divorces)
+    counter = 0;
+    
+    if(numMarriages > numDivorce+1):
+        print("Too many marriages compared to divorces")
+        return False
+    
+    #makes sure divorce dates are before corresponding marriage dates.
+    for i in range(numMarriages):
+        for j in range(i,numDivorce):
+            if(checkDates(divorces[j],marriages[i]) == -1):
+                print("Divorce date is before marriage date")
+                return False
+
+    if(numMarriages>1):
+        for k in range(numMarriages-1):
+            if(checkDates(marriages[k+1],marriages[k]) == -1):
+                print("Marriage #"+(k+1)+" is before Marriage #"+k)
+                return False
+    return True
+                
 def checkBirthBeforeMarriage(element):
     marriages = gedcom_parser.get_marriage_years(element)
     (birthData) = element.get_birth_data()
@@ -54,6 +79,58 @@ def checkBirthBeforeMarriage(element):
             counter += 1
     print ("Birth is before Marriage")
     return True
+
+def checkDates(later,early):
+    if(early[2] < later[2]):
+        return 1
+    elif(early[2] == later[2]): 
+        if(turnMonthToNum(later[1]) > turnMonthToNum(early[1])):
+            return 1
+        elif(turnMonthToNum(later[1]) == turnMonthToNum(early[1])):
+            if(later[0] > early[0]):
+                return 1
+            else:
+                return -1
+        else:
+            return -1
+    else:
+        return -1
+
+def dateChecker(later_date,early_date):
+    #formats data
+    later_info = later_date.split(" ");
+    early_info = early_date.split(" ");
+    if(len(later_info) < 3):
+        return -1
+    if(len(early_info) < 3):
+        return -1
+    #year
+    later_info[2] = int(later_info[2]);
+    early_info[2] = int(early_info[2]);
+    #day
+    later_info[0] = int(later_info[0]);
+    early_info[0] = int(early_info[0]);
+    #month is kept the same because we working with string
+    if(checkDates(later_info,early_info) == 1):
+        return 1
+    else:
+        return -1
+
+def turnMonthToNum(month):
+    return{
+        'JAN' : 1,
+        'FEB' : 2,
+        'MAR' : 3,
+        'APR' : 4,
+        'MAY' : 5,
+        'JUN' : 6,
+        'JUL' : 7,
+        'AUG' : 8,
+        'SEP' : 9, 
+        'OCT' : 10,
+        'NOV' : 11,
+        'DEC' : 12
+    }[month]
 
 def parse(allElements):
     # tree = {}
