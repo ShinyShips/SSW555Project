@@ -176,6 +176,10 @@ def checkMarriageAfter14(individual):
 # US18
 def checkSiblingsNotMarried(individual):
         families = gedcom_parser.get_families(individual)
+        
+        if not families:
+            return True
+
         members = gedcom_parser.get_family_members(families[0])
 
         if (str(individual) == str(members[0])):
@@ -206,6 +210,10 @@ def checkSiblingsNotMarried(individual):
 # US21
 def  correctGenderForRole(individual):
         families = gedcom_parser.get_families(individual)
+
+        if not families:
+            return True
+
         members = gedcom_parser.get_family_members(families[0])
 
         if (str(individual) == str(members[0])):
@@ -388,8 +396,8 @@ checkValidDates(root_child_elements[1])
 checkBirthBeforeMarriage(root_child_elements[1])
 checkBirthBeforeDeathOfParents(root_child_elements[8])
 checkMarriageAfter14(root_child_elements[1])
-checkSiblingsNotMarried(root_child_elements[1])
-correctGenderForRole(root_child_elements[2])
+checkSiblingsNotMarried(root_child_elements[10])
+correctGenderForRole(root_child_elements[10])
 parse(root_child_elements)
 print("Type stop to end program")
 

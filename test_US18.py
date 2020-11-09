@@ -1,6 +1,6 @@
 import unittest
 
-from gedCom_read import checkMarriageAfter14
+from gedCom_read import checkSiblingsNotMarried
 from var import e
 
 root_child_elements = e.root_child_elements
@@ -11,19 +11,19 @@ root_child_elements = e.root_child_elements
 class TestDate(unittest.TestCase):
 
     def test_family_head(self):
-        self.assertTrue(checkMarriageAfter14(root_child_elements[1]))
+        self.assertTrue(checkSiblingsNotMarried(root_child_elements[1]))
 
     def test_family_head_spouse(self):
-        self.assertTrue(checkMarriageAfter14(root_child_elements[2]))
+        self.assertTrue(checkSiblingsNotMarried(root_child_elements[2]))
 
     def test_first_child(self):
-        self.assertTrue(checkMarriageAfter14(root_child_elements[3]))
+        self.assertTrue(checkSiblingsNotMarried(root_child_elements[3]))
 
     def test_grand_child(self):
-        self.assertTrue(checkMarriageAfter14(root_child_elements[6]))
+        self.assertTrue(checkSiblingsNotMarried(root_child_elements[6]))
 
     def test_great_grand_child(self):
-        self.assertTrue(checkMarriageAfter14(root_child_elements[10]))
+        self.assertTrue(checkSiblingsNotMarried(root_child_elements[10]))
 
 
 
