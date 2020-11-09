@@ -151,9 +151,6 @@ def checkMarriageAfter14(individual):
             marriage_datetimes.append(convertDateListToDateTime(date.split()))
 
         for datetime in marriage_datetimes:
-            print(getBirthDay(individual))
-            print(datetime)
-            print (yearsBetween(getBirthDay(individual), datetime))
             if (yearsBetween(getBirthDay(individual), datetime) < 14):
                 return False
 
@@ -163,13 +160,72 @@ def checkMarriageAfter14(individual):
 
         while index < len(families):
             members = gedcom_parser.get_family_members(families[index])
-            spouse = members[1]
+
+            if (str(individual) == str(members[0])):
+                spouse = members[1]
+            else:
+                spouse = members[0]
+
             spouseBirthday = getBirthDay(spouse)
-            print(yearsBetween(spouseBirthday, marriage_datetimes[index]))
+
             if (yearsBetween(spouseBirthday, marriage_datetimes[index]) < 14):
                 return False
             index += 1
         return True
+
+# US18
+def checkSiblingsNotMarried(individual):
+        families = gedcom_parser.get_families(individual)
+        members = gedcom_parser.get_family_members(families[0])
+
+        if (str(individual) == str(members[0])):
+            spouse = members[1]
+        else:
+            spouse = members[0]
+
+        individualsParents = gedcom_parser.get_parents(individual)
+        spouseParents = gedcom_parser.get_parents(spouse)
+
+        (individualID) = (individual.get_pointer())
+        individualID = (individualID).strip("@")
+        (spouseID) = (spouse.get_pointer())
+        spouseID = (spouseID).strip("@")
+
+
+        if (individualID == 'I1' or spouseID == 'I1'):
+            print("Husband and Wife are at the head of the family not enough information")
+            return True
+
+        if (individualsParents == spouseParents):
+            print("Husband and Wife do have the same parents")
+            return False
+        else:
+            print("Husband and Wife do not have the same parents")
+            return True
+
+# US21
+def  correctGenderForRole(individual):
+        families = gedcom_parser.get_families(individual)
+        members = gedcom_parser.get_family_members(families[0])
+
+        if (str(individual) == str(members[0])):
+            spouse = members[1]
+            if (individual.get_gender() == 'M' and spouse.get_gender() == 'F'):
+                print("Correct Gender Roles")
+                return True
+            else:
+                print("Incorrect Gender Roles")
+                return False
+        else:
+            spouse = members[0]
+            if (individual.get_gender() == 'F' and spouse.get_gender() == 'M'):
+                print("Correct Gender Roles")
+                return True
+            else:
+                print("Incorrect Gender Roles")
+                return False
+
+
 
 # Helper Functions
 def convertDateListToDateTime(list):
@@ -332,6 +388,8 @@ checkValidDates(root_child_elements[1])
 checkBirthBeforeMarriage(root_child_elements[1])
 checkBirthBeforeDeathOfParents(root_child_elements[8])
 checkMarriageAfter14(root_child_elements[1])
+checkSiblingsNotMarried(root_child_elements[1])
+correctGenderForRole(root_child_elements[2])
 parse(root_child_elements)
 print("Type stop to end program")
 
