@@ -1,9 +1,11 @@
 import unittest
 
 #Andy Scipts
-#from gedCom_read import checkValidDates
-#from gedCom_read import checkBirthBeforeDeathOfParents
-#from gedCom_read import checkMarriageAfter14
+from gedCom_read import checkValidDates
+from gedCom_read import checkBirthBeforeDeathOfParents
+from gedCom_read import checkMarriageAfter14
+from gedCom_read import checkSiblingsNotMarried
+from gedCom_read import correctGenderForRole
 from var import e
 root_child_elements = e.root_child_elements
 
@@ -16,6 +18,11 @@ import SSW555_US7
 import US_08
 import US_15
 import US_16
+from US_27 import individual_ages
+from US_27 import n, n2, n3, n4, n5, bdays, bdays2, bdays3, bdays4, bdays5
+from US_28 import order_by_age
+from US_28 import i,i2,i3,i4,i5
+
 
 #Dom Scripts
 import US05
@@ -24,50 +31,40 @@ import US13
 
 class TestUserStory(unittest.TestCase):
 
-    def test_correct_birth_date(self):
+    def test_checkValidDates(self):
         self.assertTrue(checkValidDates(root_child_elements[1]))
-
-    def test_wrong_birth_date(self):
         self.assertTrue(checkValidDates(root_child_elements[2]))
-
-    def test_correct_death_date(self):
         self.assertTrue(checkValidDates(root_child_elements[3]))
-
-    def test_wrong_death_date(self):
         self.assertTrue(checkValidDates(root_child_elements[6]))
-
-    def test_wrong_both_dates(self):
         self.assertTrue(checkValidDates(root_child_elements[10]))
 
-    def test_family_head(self):
+    def test_checkBirthBeforeDeathOfParents(self):
         self.assertTrue(checkBirthBeforeDeathOfParents(root_child_elements[9]))
-
-    def test_family_head_spouse(self):
         self.assertTrue(checkBirthBeforeDeathOfParents(root_child_elements[11]))
-
-    def test_first_child(self):
         self.assertTrue(checkBirthBeforeDeathOfParents(root_child_elements[3]))
-
-    def test_grand_child(self):
         self.assertTrue(checkBirthBeforeDeathOfParents(root_child_elements[6]))
-
-    def test_great_grand_child(self):
         self.assertTrue(checkBirthBeforeDeathOfParents(root_child_elements[10]))
 
-    def test_family_head1(self):
+    def test_checkMarriageAfter14(self):
         self.assertTrue(checkMarriageAfter14(root_child_elements[1]))
-
-    def test_family_head_spouse1(self):
         self.assertTrue(checkMarriageAfter14(root_child_elements[2]))
-
-    def test_first_child1(self):
         self.assertTrue(checkMarriageAfter14(root_child_elements[3]))
-
-    def test_grand_child1(self):
         self.assertTrue(checkMarriageAfter14(root_child_elements[6]))
-
-    def test_great_grand_child1(self):
         self.assertTrue(checkMarriageAfter14(root_child_elements[10]))
+
+    def test_checkSiblingsNotMarried(self):
+        self.assertTrue(checkSiblingsNotMarried(root_child_elements[1]))
+        self.assertTrue(checkSiblingsNotMarried(root_child_elements[2]))
+        self.assertTrue(checkSiblingsNotMarried(root_child_elements[3]))
+        self.assertTrue(checkSiblingsNotMarried(root_child_elements[6]))
+        self.assertTrue(checkSiblingsNotMarried(root_child_elements[10]))
+
+    def test_correctGenderForRole(self):
+        self.assertTrue(correctGenderForRole(root_child_elements[1]))
+        self.assertTrue(correctGenderForRole(root_child_elements[2]))
+        self.assertTrue(correctGenderForRole(root_child_elements[3]))
+        self.assertTrue(correctGenderForRole(root_child_elements[6]))
+        self.assertTrue(correctGenderForRole(root_child_elements[10]))
     
 
     def test_birthBeforeDeath(self):
@@ -118,11 +115,22 @@ class TestUserStory(unittest.TestCase):
         self.assertEqual(tester.divorce_before_death("24 JAN 1998", " "), 'never divorced')
         self.assertEqual(tester.divorce_before_death("24 JAN 1998", "24 JAN 2000"), 'not divorced before death')
         self.assertEqual(tester.divorce_before_death("24 JAN 1998", "23 JAN 1998"), 'divorced before death')
+
+    def test_individual_ages(self):
+        self.assertEqual(individual_ages(n,bdays), 1)
+        self.assertEqual(individual_ages(n2, bdays2), -1)
+        self.assertEqual(individual_ages(n3, bdays3), 1)
+        self.assertEqual(individual_ages(n4, bdays4), 1)
+        self.assertEqual(individual_ages(n5, bdays5), -1)
+
+    def test_order_by_age(self):
+        self.assertEqual(order_by_age(i), 1)
+        self.assertEqual(order_by_age(i2), 1)
+        self.assertEqual(order_by_age(i3), 1)
+        self.assertEqual(order_by_age(i4), 1)
+        self.assertEqual(order_by_age(i5), 1)
         
 
-    def sibling_spacing(self):
-        self.assertEqual(tester.sibling_spacing("24 JAN 1998", "25 JAN 1990"), 0)
-        self.assertEqual(tester.sibling_spacing("24 JAN 1998", "24 FEB 1990"), -1)
 
 if __name__ == '__main__':
     unittest.main()
