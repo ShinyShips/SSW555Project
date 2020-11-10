@@ -18,7 +18,76 @@ gedcom_parser = Parser()
 # Parse file
 gedcom_parser.parse_file(file_path)
 
+#US23 / US25.
+#We covered both requirements within this function.
+#Iterates through all elements in gedcom and checks for any copies of first,last w/ respective birth dates
+def uniqueNameAndBirthDates():
+    name_list = []
+    birth_list = []
+    # Iterate through all root child elements
+    for element in root_child_elements:
+    # Is the `element` an actual `IndividualElement`? (Allows usage of extra functions such as `surname_match` and `get_name`.)
+        if isinstance(element, IndividualElement):
+            (first,last) = element.get_name()
+            (birthData) = element.get_birth_data()
+            birth_list.append(birthData[0])
+            name_list.append(first+" "+last)
+    lengthOfList = len(name_list)
+    for name in range(lengthOfList):
+        for x in range(name+1,lengthOfList):
+            if(name_list[name] == name_list[x] and birth_list[name] == birth_list[x]):
+                print("instance of " + name_list[name] + " repeated")
+                return False
+    return True
 
+#US22
+#Iterates through gedcom file to make sure ID's are not repeated.
+def uniqueID():
+    id_list = []
+    # Iterate through all root child elements
+    for element in root_child_elements:
+    # Is the `element` an actual `IndividualElement`? (Allows usage of extra functions such as `surname_match` and `get_name`.)
+        if isinstance(element, IndividualElement):
+            #grab ids => place into id_list
+            (identifier) = element.get_pointer()
+            id_list.append(identifier)
+    print(id_list)     
+    lengthOfList = len(id_list)
+    for ID in range(lengthOfList):
+        for x in range(ID+1,lengthOfList):
+            if(id_list[ID] == id_list[x]):
+                print("instance of " + id_list[ID] + " repeated")
+                return False
+    return True
+
+#US24
+def uniqueFamilyBySpouses():
+    spouse_list = []
+    marriage_list = []
+    for element in root_child_elements:
+        if isinstance(element, IndividualElement):
+            if(gedcom_parser.get_marriage_years(element)):
+                (first,last) = element.get_name()
+                (marr) = gedcom_parser.get_marriages(element)
+                for x in range(len(marr)):
+                    marriage_list.append(first+" "+last)
+                    marriage_list.append(marr[x][0])
+    for x in range(1,len(marriage_list)):
+        x+=1
+        count = 0;
+        name_list = []
+        for y in range(x+2,len(marriage_list)):
+            if(marriage_list[x] == marriage_list[y]):
+                name_list.append
+                count+=1
+            y+=1
+        if(count > 0):
+            return False
+    print(marriage_list)
+    return True
+
+
+            
 def generateChildElements():
     global root_child_elements
     root_child_elements = e.root_child_elements
