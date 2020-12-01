@@ -15,6 +15,8 @@ root_child_elements = e.root_child_elements
 #Kyle Scripts
 import birthBeforeDeath
 import marriageBeforeDivorce
+from US36 import myfamily
+from US37 import myfamily
 
 #Connor Scripts
 import SSW555_US7
@@ -34,8 +36,8 @@ from US_42 import check_real_dates, d1,d2,d3,d4,d5
 import US05
 import US06
 import US13
-import US31
-import US35
+from US31 import myfamily
+from US35 import myfamily
 
 class TestUserStory(unittest.TestCase):
 
