@@ -302,7 +302,40 @@ def  correctGenderForRole(individual):
                 print("Incorrect Gender Roles")
                 return False
 
+# US29
+def listDeceased(allElements, individual):
+    generateChildElements()
+    IndividualTable = PrettyTable()
+    # Iterate through elements
+    for element in root_child_elements:
+        if isinstance(element, IndividualElement):
+            if (element.is_deceased() == True):
+                (ID) = element.get_pointer()
+                (first, last) = element.get_name()
+                IndividualTable.field_names = ["ID","First","Last"]
+                IndividualTable.add_row([ID.strip("@"),first,last])
 
+    print(IndividualTable)
+    return (individual.is_deceased())
+
+# US30
+def listMarried(allElements, individual):
+    generateChildElements()
+    IndividualTable = PrettyTable()
+    married = False
+    # Iterate through elements
+    for element in root_child_elements:
+        if isinstance(element, IndividualElement):
+            if (gedcom_parser.get_marriages(element)):
+                (ID) = element.get_pointer()
+                (first, last) = element.get_name()
+                IndividualTable.field_names = ["ID","First","Last"]
+                IndividualTable.add_row([ID.strip("@"),first,last])
+
+    print(IndividualTable)
+    if (gedcom_parser.get_marriages(individual)):
+        married = True
+    return married
 
 # Helper Functions
 def convertDateListToDateTime(list):
@@ -467,6 +500,8 @@ checkBirthBeforeDeathOfParents(root_child_elements[8])
 checkMarriageAfter14(root_child_elements[1])
 checkSiblingsNotMarried(root_child_elements[10])
 correctGenderForRole(root_child_elements[10])
+listDeceased(root_child_elements, root_child_elements[1])
+listMarried(root_child_elements, root_child_elements[1])
 parse(root_child_elements)
 print("Type stop to end program")
 
